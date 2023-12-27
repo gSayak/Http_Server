@@ -30,7 +30,7 @@ fn handle_connection(mut stream: TcpStream) {
     let split_line: Vec<_> = request_line.split(" ").collect();
     let method = split_line[0];
     let mut path = split_line[1].to_string();
-    let protocol = split_line[2];
+    // let protocol = split_line[2];
     if method == "GET" && path == "/" {
         let response = "HTTP/1.1 200 OK\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
@@ -40,7 +40,7 @@ fn handle_connection(mut stream: TcpStream) {
         if path.starts_with("/") {
             path.remove(0);
         }
-        let response = format!("HTTP/1.1 200 OK\r\n\r\nContent-Type: text/plain\r\n\r\nContent-Length: {}\r\n\r\n{}",path.len(), path);
+        let response = format!("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",path.len(), path);
         stream.write_all(response.as_bytes()).unwrap();
     }
     else {
