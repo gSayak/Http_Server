@@ -29,10 +29,11 @@ fn handle_connection(mut stream: TcpStream) {
     let request_line = buf_reader.lines().next().unwrap().unwrap();
     let split_line: Vec<_> = request_line.split(" ").collect();
     let split_path: Vec<&str> = split_line[1].split("/").collect();
-    if !split_path[2].is_empty() {
+    if split_path.len()>=3 && !split_path[2].is_empty() {
         let response = format!("HTTP/1.1 200 OK\r\n\r\nContent-Type: text/plain\r\n\r\nContent-Length: {}\r\n\r\n{}",split_path[2].len(), split_path[2]);
         stream.write_all(response.as_bytes()).unwrap();
-    } else {
+    }
+    else {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
