@@ -28,20 +28,29 @@ fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
     let request_line = buf_reader.lines().next().unwrap().unwrap();
     let split_line: Vec<_> = request_line.split(" ").collect();
-    let split_path: Vec<&str> = split_line[1].split("/").collect();
-    if split_path.len()>=3 && !split_path[2].is_empty() && split_path[1]=="echo" {
-        let response = format!("HTTP/1.1 200 OK\r\n\r\nContent-Type: text/plain\r\n\r\nContent-Length: {}\r\n\r\n{}",split_path[2].len(), split_path[2]);
+    let method = split_line[0];
+    let mut path = split_line[1].to_string();
+    let protocol = split_line[2];
+    if method == "GET" && path == "/" {
+        let response = "HTTP/1.1 200 OK\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
-    else if split_path.len()<3 && !split_path.is_empty() {
-        let response = "HTTP/1.1 200 OK\r\n\r\n";
+    if path.starts_with("/echo/") {
+        path = path.replace("/echo", "");
+        if path.starts_with("/") {
+            path.remove(0);
+        }
+        let response = format!("HTTP/1.1 200 OK\r\n\r\nContent-Type: text/plain\r\n\r\nContent-Length: {}\r\n\r\n{}",path.len(), path);
         stream.write_all(response.as_bytes()).unwrap();
     }
     else {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
-    // println!("Path: {:#?}", split_path);
+
     // println!("Request: {:#?}", request_line);
     // println!("Split: {:#?}", split_line);
+    // println!("Method: {:#?}", method);
+    // println!("Path: {:#?}", path);
+    // println!("Protocol: {:#?}", protocol);
 }
