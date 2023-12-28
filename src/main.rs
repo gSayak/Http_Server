@@ -18,7 +18,7 @@ fn main() {
             Ok(stream) => {
                 thread::spawn(move || {
                     handle_connection(stream);
-                }).join().unwrap();
+                });
             }
             Err(e) => {
                 println!("error: {}", e);
