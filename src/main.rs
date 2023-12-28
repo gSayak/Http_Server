@@ -61,11 +61,20 @@ fn handle_connection(mut stream: TcpStream) {
         }
         let response = format!(
             "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
-            user_agent.len(),
-            user_agent
+            path.len(),
+            path
         );
         stream.write_all(response.as_bytes()).unwrap();
-    } else {
+    }
+    else if path.starts_with("/user-agent"){
+            let response = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
+                user_agent.len(),
+                user_agent
+            );
+        stream.write_all(response.as_bytes()).unwrap();
+    }
+    else {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
