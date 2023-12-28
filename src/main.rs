@@ -26,8 +26,27 @@ fn main() {
 
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
-    let request_line = buf_reader.lines().next().unwrap().unwrap();
-    let split_line: Vec<_> = request_line.split(" ").collect();
+    // let request_line = buf_reader.lines().next().unwrap().unwrap();
+    let request_line: Vec<_> = buf_reader
+        .lines()
+        .map(|result| result.unwrap())
+        .take_while(|line| !line.is_empty())
+        .collect();
+
+    let user_agent_header = "User-Agent:";
+    let user_agent = request_line
+        .iter()
+        .find(|line| line.starts_with(user_agent_header))
+        .unwrap()
+        .strip_prefix(user_agent_header)
+        .unwrap()
+        .trim();
+    // println!("User-Agent: {:#?}", user_agent);
+
+    // println!("Request: {:#?}", request_line);
+    // println!("{:#?}", request_line[0]);
+
+    let split_line: Vec<_> = request_line[0].split(" ").collect();
     let method = split_line[0];
     let mut path = split_line[1].to_string();
     // let protocol = split_line[2];
@@ -40,10 +59,13 @@ fn handle_connection(mut stream: TcpStream) {
         if path.starts_with("/") {
             path.remove(0);
         }
-        let response = format!("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",path.len(), path);
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
+            user_agent.len(),
+            user_agent
+        );
         stream.write_all(response.as_bytes()).unwrap();
-    }
-    else {
+    } else {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
