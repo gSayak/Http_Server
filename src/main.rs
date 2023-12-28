@@ -2,7 +2,6 @@
 use std::{
     io::{BufRead, BufReader, Write},
     net::{TcpListener, TcpStream},
-    thread,
 };
 
 fn main() {
