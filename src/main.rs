@@ -41,10 +41,12 @@ fn handle_connection(mut stream: TcpStream) {
         .iter()
         .find(|line| line.starts_with(user_agent_header))
         .unwrap()
-        .strip_prefix(user_agent_header)
-        .unwrap()
         .trim();
+    
+    let user_agent_final = user_agent.strip_prefix(user_agent_header).unwrap().trim();
+
     // println!("User-Agent: {:#?}", user_agent);
+    // println!("User-Agent-final: {:#?}", user_agent_final);
 
     // println!("Request: {:#?}", request_line);
     // println!("{:#?}", request_line[0]);
@@ -52,7 +54,6 @@ fn handle_connection(mut stream: TcpStream) {
     let split_line: Vec<_> = request_line[0].split(" ").collect();
     let method = split_line[0];
     let mut path = split_line[1].to_string();
-    // let protocol = split_line[2];
     if method == "GET" && path == "/" {
         let response = "HTTP/1.1 200 OK\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
@@ -72,8 +73,8 @@ fn handle_connection(mut stream: TcpStream) {
     else if path.starts_with("/user-agent"){
             let response = format!(
                 "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
-                user_agent.len(),
-                user_agent
+                user_agent_final.len(),
+                user_agent_final
             );
         stream.write_all(response.as_bytes()).unwrap();
     }
