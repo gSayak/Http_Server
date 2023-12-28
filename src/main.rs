@@ -1,4 +1,3 @@
-// Uncomment this block to pass the first stage
 use std::{
     io::{BufRead, BufReader, Write},
     net::{TcpListener, TcpStream},
@@ -6,13 +5,10 @@ use std::{
 };
 
 fn main() {
-    // You can use print statements as follows for debugging, they'll be visible when running tests.
+   
     println!("Logs from your program will appear here!");
 
-    // Uncomment this block to pass the first stage
-    //
     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
-    //
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
@@ -29,7 +25,7 @@ fn main() {
 
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
-    // let request_line = buf_reader.lines().next().unwrap().unwrap();
+   
     let request_line: Vec<_> = buf_reader
         .lines()
         .map(|result| result.unwrap())
@@ -42,18 +38,6 @@ fn handle_connection(mut stream: TcpStream) {
         .find(|line| line.starts_with(user_agent_header))
         .map(|line| line.trim_start_matches(user_agent_header).trim())
         .unwrap();
-
-    // match user_agent {
-    //     Some(user_agent) => {
-    //         let _ = user_agent.strip_prefix(user_agent_header).unwrap().trim();
-    //     }
-    // }
-
-    // println!("User-Agent: {:#?} ", user_agent);
-    // println!("User-Agent-final: {:#?}", user_agent_final);
-
-    // println!("Request: {:#?}", request_line);
-    // println!("{:#?}", request_line[0]);
 
     let split_line: Vec<_> = request_line[0].split(" ").collect();
     let method = split_line[0];
