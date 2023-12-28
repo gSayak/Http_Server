@@ -2,7 +2,7 @@
 use std::{
     io::{BufRead, BufReader, Write},
     net::{TcpListener, TcpStream},
-    thread, 
+    thread,
 };
 
 fn main() {
@@ -40,12 +40,16 @@ fn handle_connection(mut stream: TcpStream) {
     let user_agent = request_line
         .iter()
         .find(|line| line.starts_with(user_agent_header))
-        .unwrap()
-        .trim();
-    
-    let user_agent_final = user_agent.strip_prefix(user_agent_header).unwrap().trim();
+        .map(|line| line.trim_start_matches(user_agent_header).trim())
+        .unwrap();
 
-    // println!("User-Agent: {:#?}", user_agent);
+    // match user_agent {
+    //     Some(user_agent) => {
+    //         let _ = user_agent.strip_prefix(user_agent_header).unwrap().trim();
+    //     }
+    // }
+
+    // println!("User-Agent: {:#?} ", user_agent);
     // println!("User-Agent-final: {:#?}", user_agent_final);
 
     // println!("Request: {:#?}", request_line);
@@ -69,23 +73,15 @@ fn handle_connection(mut stream: TcpStream) {
             path
         );
         stream.write_all(response.as_bytes()).unwrap();
-    }
-    else if path.starts_with("/user-agent"){
-            let response = format!(
-                "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
-                user_agent_final.len(),
-                user_agent_final
-            );
+    } else if path.starts_with("/user-agent") {
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
+            user_agent.len(),
+            user_agent
+        );
         stream.write_all(response.as_bytes()).unwrap();
-    }
-    else {
+    } else {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
-
-    // println!("Request: {:#?}", request_line);
-    // println!("Split: {:#?}", split_line);
-    // println!("Method: {:#?}", method);
-    // println!("Path: {:#?}", path);
-    // println!("Protocol: {:#?}", protocol);
 }
