@@ -37,7 +37,7 @@ fn handle_connection(mut stream: TcpStream) {
         .iter()
         .find(|line| line.starts_with(user_agent_header))
         .map(|line| line.trim_start_matches(user_agent_header).trim())
-        .unwrap();
+        .unwrap_or_else(|| "Unknown User Agent");
 
     let split_line: Vec<_> = request_line[0].split(" ").collect();
     let method = split_line[0];
