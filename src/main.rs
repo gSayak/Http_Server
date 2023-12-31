@@ -47,7 +47,7 @@ fn handle_connection(mut stream: TcpStream) {
     if method == "GET" && path == "/" {
         let response = "HTTP/1.1 200 OK\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
-    }
+    
     if path.starts_with("/echo/") {
         path = path.replace("/echo", "");
         if path.starts_with("/") {
@@ -97,4 +97,5 @@ fn handle_connection(mut stream: TcpStream) {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
+}
 }
