@@ -92,27 +92,7 @@ fn handle_connection(mut stream: TcpStream) {
             let response = "HTTP/1.1 404 Not Found\r\n\r\n";
             stream.write_all(response.as_bytes()).unwrap();
         }
-        // let contents = fs::read_to_string(&path);
-        // match contents {
-        //     Ok(contents) => {
-        //         if path == filename{
-        //         let response = format!(
-        //             "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {}\r\n\r\n{contents}",
-        //             contents.len(),
-        //         );
-        //         stream.write_all(response.as_bytes()).unwrap();
-        //     }
-        //     else{
-        //         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
-        //         stream.write_all(response.as_bytes()).unwrap();
-        //     }
-
-        //     }
-        //     Err(..)=> {
-        //         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
-        //         stream.write_all(response.as_bytes()).unwrap();
-        //     }
-        // }
+        
     } else {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
