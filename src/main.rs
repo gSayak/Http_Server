@@ -1,14 +1,14 @@
 use std::{
-    fs,
+    env, fs,
     io::{BufRead, BufReader, Write},
     net::{TcpListener, TcpStream},
+    path::Path,
     thread,
-    env,
 };
 
 fn main() {
     println!("Logs from your program will appear here!");
-    
+
     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
     for stream in listener.incoming() {
         match stream {
@@ -26,8 +26,6 @@ fn main() {
 
 fn handle_connection(mut stream: TcpStream) {
     let args: Vec<String> = env::args().collect();
-
-    let filename = args[2].to_string();
     let buf_reader = BufReader::new(&mut stream);
 
     let request_line: Vec<_> = buf_reader
@@ -69,34 +67,52 @@ fn handle_connection(mut stream: TcpStream) {
         );
         stream.write_all(response.as_bytes()).unwrap();
     } else if path.starts_with("/files") {
-        
+        let filename = args[2].to_string();
         path = path.replace("/files", "");
         if path.starts_with("/") {
             path.remove(0);
         }
         // println!("{} {}", path, filename);
-
-        let contents = fs::read_to_string(&path);
-        match contents {
-            Ok(contents) => {
-                if path == filename{
-                let response = format!(
-                    "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {}\r\n\r\n{contents}",
-                    contents.len(),
-                );
-                stream.write_all(response.as_bytes()).unwrap();
+        let full_path = format!("{filename}/{path}");
+        if Path::new(&full_path).exists() {
+            let contents = fs::read_to_string(&full_path);
+            match contents {
+                Ok(contents) => {
+                    let response = format!("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {}\r\n\r\n{contents}",
+                                    contents.len(),
+                                );
+                    stream.write_all(response.as_bytes()).unwrap();
+                }
+                Err(..) => {
+                    let response = "HTTP/1.1 404 Not Found\r\n\r\n";
+                    stream.write_all(response.as_bytes()).unwrap();
+                }
             }
-            else{
-                let response = "HTTP/1.1 404 Not Found\r\n\r\n";
-                stream.write_all(response.as_bytes()).unwrap();
-            }
-
-            }
-            Err(..)=> {
-                let response = "HTTP/1.1 404 Not Found\r\n\r\n";
-                stream.write_all(response.as_bytes()).unwrap();
-            }
+        } else {
+            let response = "HTTP/1.1 404 Not Found\r\n\r\n";
+            stream.write_all(response.as_bytes()).unwrap();
         }
+        // let contents = fs::read_to_string(&path);
+        // match contents {
+        //     Ok(contents) => {
+        //         if path == filename{
+        //         let response = format!(
+        //             "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {}\r\n\r\n{contents}",
+        //             contents.len(),
+        //         );
+        //         stream.write_all(response.as_bytes()).unwrap();
+        //     }
+        //     else{
+        //         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
+        //         stream.write_all(response.as_bytes()).unwrap();
+        //     }
+
+        //     }
+        //     Err(..)=> {
+        //         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
+        //         stream.write_all(response.as_bytes()).unwrap();
+        //     }
+        // }
     } else {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
