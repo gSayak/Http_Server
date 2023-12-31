@@ -47,8 +47,8 @@ fn handle_connection(mut stream: TcpStream) {
     if method == "GET" && path == "/" {
         let response = "HTTP/1.1 200 OK\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
-    
-    if path.starts_with("/echo/") {
+    }
+    if  method == "GET" && path.starts_with("/echo/") {
         path = path.replace("/echo", "");
         if path.starts_with("/") {
             path.remove(0);
@@ -59,14 +59,14 @@ fn handle_connection(mut stream: TcpStream) {
             path
         );
         stream.write_all(response.as_bytes()).unwrap();
-    } else if path.starts_with("/user-agent") {
+    } else if method == "GET" && path.starts_with("/user-agent") {
         let response = format!(
             "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
             user_agent.len(),
             user_agent
         );
         stream.write_all(response.as_bytes()).unwrap();
-    } else if path.starts_with("/files") {
+    } else if method == "GET" && path.starts_with("/files") {
         let filename = args[2].to_string();
         path = path.replace("/files", "");
         if path.starts_with("/") {
@@ -93,9 +93,12 @@ fn handle_connection(mut stream: TcpStream) {
             stream.write_all(response.as_bytes()).unwrap();
         }
         
-    } else {
+    } else if method == "POST"{
+        println!("POST");
+    }
+    else
+    {
         let response = "HTTP/1.1 404 Not Found\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
-}
 }
