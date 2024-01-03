@@ -1,39 +1,43 @@
 [![progress-banner](https://backend.codecrafters.io/progress/http-server/d6b5d33e-5a2c-4fb0-8812-e2f1cde0a3e8)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
 
-This is a starting point for Rust solutions to the
-["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
+# Multi-Client HTTP/1.1 Server
 
-[HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the
-protocol that powers the web. In this challenge, you'll build a HTTP/1.1 server
-that is capable of serving multiple clients.
+## Overview
 
-Along the way you'll learn about TCP servers,
-[HTTP request syntax](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html),
-and more.
+This project is a multi-threaded HTTP/1.1 server that serves clients over TCP. It supports various features, including handling GET and POST requests, parsing headers, and responding with appropriate status codes.
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+## Getting Started
 
-# Passing the first stage
+1. **Start the Server**: Begin by launching the server on port 4221.
 
-The entry point for your HTTP server implementation is in `src/main.rs`. Study
-and uncomment the relevant code, and push your changes to pass the first stage:
+    ```bash
+    ./your_server.sh
+    ```
 
-```sh
-git add .
-git commit -m "pass 1st stage" # any msg
-git push origin master
-```
+2. **Accepting Connections**: The server accepts TCP connections and responds with a 200 OK status.
 
-Time to move on to the next stage!
+3. **Handling Errors**: In case of an error, the server gracefully responds with a 404 NOT FOUND status.
 
-# Stage 2 & beyond
+## Implemented Features
 
-Note: This section is for stages 2 and beyond.
+### 1. GET Request Handling
 
-1. Ensure you have `cargo (1.70)` installed locally
-1. Run `./your_server.sh` to run your program, which is implemented in
-   `src/main.rs`. This command compiles your Rust project, so it might be slow
-   the first time you run it. Subsequent runs will be fast.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+The server effectively processes GET requests and serves content accordingly.
+
+### 2. Header Parsing
+
+Parsed headers, extracting and printing the `user-agent` information.
+
+### 3. Multi-Threading
+
+Implemented multi-threading to handle multiple clients concurrently.
+
+### 4. Directory Viewing
+
+Utilize GET requests with the `--directory <directory-path>` argument to view the contents of a specified directory.
+
+### 5. File Upload via POST
+
+Leverage POST requests to save files in the directory of the web server. The server responds with a 201 OK status upon successful file creation.
+
+
